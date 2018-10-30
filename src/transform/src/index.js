@@ -1,52 +1,25 @@
-import Component from './component/component';
-import generate from './generate/index';
-import React from 'react';
-import MiniPlugin from '../plugin/mini';
+import Transform from './transform';
+import MiniPlugin from '../plugin/mini/mini';
+import Vue2Plugin from '../plugin/vue-2.0/index';
 
-global = Object.assign(global, {
-    React,
-    View: 'VIEW',
-    Text: 'TEXT',
-    Component: 'COMPONENT'
-});
-
-class Transform {
-    constructor (options) {
-        this.$root = null;
-        this.$config = null;
-        this.$options = options;
-        this.$componentObject = {};
-
-        this._currentComponent = null;
+const Ditto = {
+    _plugins: {},
+    createCompiler (name) {
+        let _plugin = Ditto._plugins[name];
+        if (_plugin) {
+            return new Transform(_plugin);
+        }
+    },
+    addPlugin (name, plugin) {
+        Ditto._plugins[name] = plugin;
+    },
+    removePlugin (name) {
+        delete Ditto._plugins[name];
     }
-    
+};
 
-    init () {
-    }
+// default plugins
+Ditto.addPlugin('vue2', Vue2Plugin);
+Ditto.addPlugin('wechat', MiniPlugin);
 
-    renderPage (app) {
-        this.$root = new Component(app, this.$options, this);
-        this.$componentObject[app.name] = this.$root;
-        return this;
-    }
-
-    traverse () {
-
-    }
-
-    beforeCompile () {
-
-    }
-
-    generate (entry, output) {
-        // let entry = this.$options.entry;
-        // let output = this.$options.output;
-        generate(entry, output, this);
-        return this;
-    }
-}
-
-export {
-    MiniPlugin,
-    Transform
-}
+export default Ditto;

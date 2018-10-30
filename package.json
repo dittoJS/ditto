@@ -1,5 +1,5 @@
 {
-  "name": "transform",
+  "name": "ditt",
   "version": "0.0.1",
   "description": "transform code on different mvvm framework",
   "main": "index.js",
@@ -7,6 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@babel/core": "^7.1.2",
+    "babel-core": "^6.26.3",
+    "babel-generator": "^6.26.1",
+    "babel-loader": "^8.0.4",
+    "babel-template": "^6.26.0",
+    "babel-traverse": "^6.26.0",
+    "babel-types": "^6.26.0",
     "fs-extra": "^7.0.0",
     "prettier": "^1.14.3",
     "prop-types": "^15.6.2",

@@ -1,3 +1,5 @@
+import config from '../../config';
+
 export function proccessComponent (options={}) {
     /**
      @props
@@ -7,14 +9,18 @@ export function proccessComponent (options={}) {
      @lifecycles
      */
     let arr = [];
+    options.data = options.data || {};
     _attr('props');
     _attr('data');
     _attr('computed');
     _attr('methods');
 
-    let lifecycles = {
-        ready: options.ready
-    }
+    let lifecycles = {};
+    config.lifecycles.forEach((item) => {
+        if (options[item]) {
+            lifecycles[item] = options[item];
+        }
+    })
 
     arr.push({
         type: 'lifecycles',

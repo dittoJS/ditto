@@ -1,6 +1,6 @@
 const fs = require("fs-extra");
 const path = require('path')
-import { codePrettier } from './lang';
+// import { codePrettier } from './lang';
 
 const componentFileRE = /\/\*\s*\@component\s*\*\//;        // /* component */
 const refOfComponentRE = /\/\*\s*\@import\s*\*\/\s*\n((.+\n)+)\n+/;          // /* @import */
@@ -8,9 +8,9 @@ const refOfComponentRE = /\/\*\s*\@import\s*\*\/\s*\n((.+\n)+)\n+/;          // 
 export function writeFile (file, content, isPretter = false) {
     fs.ensureFile(file, err => {
         if (err) console.log(err);
-        if (isPretter) {
-            content = codePrettier(content);
-        }
+        // if (isPretter) {
+        //     content = codePrettier(content);
+        // }
 
         fs.outputFile(file, content, err => {
             if (err) {

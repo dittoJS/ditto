@@ -1,13 +1,17 @@
 const path = require('path');
 
-// const entry = "./src/transform/test/blog/mini.config.js";
-const entry = './test/transform.js';
+const mini = "./test/mini.config.js";
+const vue2 = "./test/vue2.config.js";
+// const entry = './test/transform.js';
 
 module.exports = {
   mode: 'development',
-  entry: entry,
+  entry: {
+    mini,
+    vue2
+  },
   output: {
-    filename: "bundle.js",
+    filename: "[name].js",
     path: __dirname + "/build"
   },
   target: 'node',

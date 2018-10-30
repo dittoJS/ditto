@@ -1,5 +1,5 @@
 import { parseForDir } from "../parse/index";
-import { firstWordToUp, deepCopy } from "../utils/lang";
+import { firstWordToUp } from "../utils/lang";
 import defaultDirectives from '../directive/index';
 
 const bindRE = /^([a-z]|[A-Z])+/;
@@ -9,10 +9,10 @@ const dirAttrRE = /^v-(\w+)/;
 let options;
 export default function compiler (ast, opt = {}) {
     options = opt;
-    return compileNode(deepCopy(ast));
+    return compileNode(ast);
 }
 
-function compileNode (node) {
+function compileNode (node, parentNode) {
     let template = '';
     let deep = typeof options.deep === 'undefined' ? true : false;
     let middlewareFn = options.directives.bind || processProp;
@@ -43,7 +43,7 @@ function compileNode (node) {
                 dirParams = props[item];
             } else if (matchs[1] === 'ref') {
                 dirParams = props[item];
-                tagName = dirParams.name;
+                tagName = dirParams.tagName || dirParams.name;
                 nodeTemplate = `<${tagName} `;
             }
             let dir = {
@@ -96,7 +96,7 @@ function compileNode (node) {
 
         let ret;
         if (directives && directives[attr.desc.rawName]) {
-          ret = directives[attr.desc.rawName](attr.desc);
+          ret = directives[attr.desc.rawName](attr.desc, node, parentNode);
         } else {
           ret = middlewareFn(attr.desc, node);
         }
@@ -111,7 +111,7 @@ function compileNode (node) {
     if (deep && (typeof props.children !== 'string')) {
         if (props.children) {
             template += '>';
-            template += compileNodeList(props.children);
+            template += compileNodeList(node);
             template += `</${tagName}>`;
         } else {
             template += '/>';
@@ -128,14 +128,15 @@ function compileNode (node) {
     return template;
 }
 
-function compileNodeList (children) {
+function compileNodeList (node) {
+    let children = node.props.children;
     let template = '';
     if (Array.isArray(children)) {
         children.forEach((child) => {
-            template += compileNode(child);
+            template += compileNode(child, node);
         })
     } else {
-        template += compileNode(children);
+        template += compileNode(children, node);
     }
 
     return template;
