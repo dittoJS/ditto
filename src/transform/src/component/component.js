@@ -1,14 +1,5 @@
 import compiler from '../compiler/compile.js';
-import { jsToCss } from '../../src/utils/style';
-import { deepCopy } from '../../src/utils/lang';
-
-export function composite(options = {}) {
-    if (!options.name) {
-        console.error("component's name is must");
-    }
-    let TAG = 'Component';
-    return <TAG is-component={true} name={options.name} />;
-}
+import { jsToCss, deepCopy } from '../../src/utils/index';
 
 let uid = 0;
 export default class Component {
@@ -29,11 +20,11 @@ export default class Component {
     }
 
     beforeInit(options, transformOptions) {
-        if (transformOptions.beforeInitComponent) {
-            options = transformOptions.beforeInitComponent(options);
+        if (transformOptions.components.beforeCreate) {
+            options = transformOptions.components.beforeCreate(options);
         }
         if (!options.name) {
-            console.error('component must have an name.');
+            console.error('Component must have an name.');
         }
     }
 

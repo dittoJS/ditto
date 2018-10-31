@@ -1,39 +1,50 @@
-import { parseForDir } from "../parse/index";
-import { firstWordToUp } from "../utils/lang";
+import { parseForDir } from '../parse/index';
 import defaultDirectives from '../directive/index';
+import { warn } from '../utils/index';
 
 const bindRE = /^([a-z]|[A-Z])+/;
 const onRE = /^on-(\w+)/;
 const dirAttrRE = /^v-(\w+)/;
 
 let options;
-export default function compiler (ast, opt = {}) {
+export default function compiler(ast, opt = {}) {
     options = opt;
     return compileNode(ast);
 }
 
-function compileNode (node, parentNode) {
+function toLowerCase(str) {
+    return str.toLowerCase();
+}
+
+function compileNode(node, parentNode) {
     let template = '';
     let deep = typeof options.deep === 'undefined' ? true : false;
-    let middlewareFn = options.directives.bind || processProp;
+    let middlewareFn = options.directives.vBind || processProp;
     let directives = Object.assign(defaultDirectives, options.directives);
-    let processTag = options.processTag || firstWordToUp;
+    let processTag = options.processTag || toLowerCase;
     let compileNodeText = compileNodeTextBuilder(options);
     let nodeTemplate = '';
-    let tagName = processTag(node.type);
 
-    if (options.beforeCompile) {
-        options.beforeCompile(node);
+    if (options.lifeCycles.beforeCompile) {
+        options.lifeCycles.beforeCompile(node);
+    }
+
+    let tagName = node.tagName;
+
+    // default process for tagName
+    if (!tagName) {
+        node.tagName = processTag(node.type);
     }
 
     let props = node.props || {};
     nodeTemplate += `<${tagName} `;
-    Object.keys(props).forEach((item) => {
-        let matchs, attr = {};
+    Object.keys(props).forEach(item => {
+        let matchs,
+            attr = {};
         if (item === 'children') return false;
 
         // terminal dir
-        if (matchs = item.match(dirAttrRE)) {
+        if ((matchs = item.match(dirAttrRE))) {
             let dirParams;
             if (matchs[1] === 'for') {
                 dirParams = parseForDir(props[item]);
@@ -54,13 +65,13 @@ function compileNode (node, parentNode) {
                 key: node.key,
                 tagName
             };
- 
+
             attr = {
                 type: 'terminal',
                 desc: dir
-            }
-        } else if (matchs = item.match(onRE)) {
-            let eventType = options.events[matchs[1]];
+            };
+        } else if ((matchs = item.match(onRE))) {
+            let eventType = options.events.typeMap[matchs[1]];
             eventType = eventType || matchs[1];
             attr = {
                 type: 'terminal',
@@ -70,7 +81,7 @@ function compileNode (node, parentNode) {
                     params: props[item],
                     isDynamic: true
                 }
-            }
+            };
         } else if (item.match(bindRE)) {
             let params, isDynamic;
             params = props[item];
@@ -81,7 +92,7 @@ function compileNode (node, parentNode) {
             } else {
                 isDynamic = true;
             }
-            
+
             attr = {
                 type: 'bind',
                 desc: {
@@ -91,14 +102,14 @@ function compileNode (node, parentNode) {
                     isDynamic,
                     tagName
                 }
-            }
+            };
         }
 
         let ret;
         if (directives && directives[attr.desc.rawName]) {
-          ret = directives[attr.desc.rawName](attr.desc, node, parentNode);
+            ret = directives[attr.desc.rawName](attr.desc, node, parentNode);
         } else {
-          ret = middlewareFn(attr.desc, node);
+            ret = middlewareFn(attr.desc, node);
         }
 
         if (typeof ret === 'string') {
@@ -108,7 +119,7 @@ function compileNode (node, parentNode) {
 
     template += nodeTemplate;
 
-    if (deep && (typeof props.children !== 'string')) {
+    if (deep && typeof props.children !== 'string') {
         if (props.children) {
             template += '>';
             template += compileNodeList(node);
@@ -128,13 +139,13 @@ function compileNode (node, parentNode) {
     return template;
 }
 
-function compileNodeList (node) {
+function compileNodeList(node) {
     let children = node.props.children;
     let template = '';
     if (Array.isArray(children)) {
-        children.forEach((child) => {
+        children.forEach(child => {
             template += compileNode(child, node);
-        })
+        });
     } else {
         template += compileNode(children, node);
     }
@@ -142,16 +153,18 @@ function compileNodeList (node) {
     return template;
 }
 
-function compileNodeTextBuilder (options = {}) {
-    let processText = options.processText || function (str) {
-        return str;
-    };
+function compileNodeTextBuilder(options = {}) {
+    let processText =
+        options.processText ||
+        function(str) {
+            return str;
+        };
 
-    return function compileNodeText (node) {
+    return function compileNodeText(node) {
         return processText(node.props.children);
-    }
+    };
 }
 
-function processProp (attr, node) {
+function processProp(attr, node) {
     return `${attr.desc.name}='${attr.desc.params}' `;
 }

@@ -1,5 +1,6 @@
 const fs = require("fs-extra");
-const path = require('path')
+const path = require('path');
+import { warn } from './debug';
 // import { codePrettier } from './lang';
 
 const componentFileRE = /\/\*\s*\@component\s*\*\//;        // /* component */
@@ -8,9 +9,6 @@ const refOfComponentRE = /\/\*\s*\@import\s*\*\/\s*\n((.+\n)+)\n+/;          // 
 export function writeFile (file, content, isPretter = false) {
     fs.ensureFile(file, err => {
         if (err) console.log(err);
-        // if (isPretter) {
-        //     content = codePrettier(content);
-        // }
 
         fs.outputFile(file, content, err => {
             if (err) {
@@ -21,7 +19,7 @@ export function writeFile (file, content, isPretter = false) {
 }
 
 export function readDirRecursive (dirname, cb) {
-    console.log('dirname: ', dirname);
+    // console.log('dirname: ', dirname);
     fs.readdir(dirname, 'utf8', function (err, files) {
         if (err) {
             console.log(err);
@@ -29,11 +27,11 @@ export function readDirRecursive (dirname, cb) {
         };
         files.forEach(file => {
             let filename = path.join(dirname, file);
-            console.log('filename: ', filename)
+            // console.log('filename: ', filename)
             if (fs.statSync(filename).isFile()) {
                 let content = isComponentFile(filename);
                 if (!content) {
-                    // not an component
+                    // warn(`Invalid component: ${filename}`);
                     return false;
                 }
 
@@ -57,12 +55,13 @@ export function readDirRecursive (dirname, cb) {
                 })
 
                 if (codeArray.length !== 2) {
-                    console.warn(`component ${filename}\'s @component is wrong.`);
+                    warn(`Missing @component identify.`);
                 } else {
                     cb && cb(filename, {
                         commonCode, 
                         componentCode,
-                        refs
+                        refs,
+                        content
                     });
                 }
             } else {
@@ -74,8 +73,15 @@ export function readDirRecursive (dirname, cb) {
 }
 
 export function copy (from, to) {
-    console.log(from, to)
-    // fs.ensureFileSync(from);
+    if (!from) {
+        warn('Missing entry path.');
+        return false;
+    }
+
+    if (!to) {
+        warn('Missing dist path.');
+        return false;
+    }
     fs.ensureDirSync(to);
     fs.copySync(from, to)
 }

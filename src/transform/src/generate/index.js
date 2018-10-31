@@ -1,22 +1,21 @@
-import { readDirRecursive, copy } from '../utils/file';
+import { readDirRecursive, copy, warn } from '../utils/index';
 import path from 'path';
 
-export default function generate (entry, output, host) {
+export default function generate(entry, output, host) {
     let options = host.$options;
-    beforeGenerate();
+    let lifeCycles = options.lifeCycles;
     copy(entry, output);
-    console.log('copy files');
-    readDirRecursive(output, function (filename, parsedCode) {
+    console.log('Ready to generate.');
+    readDirRecursive(output, function(filename, parsedInfo) {
         let basename = path.basename(filename, '.js');
         let component = host.$componentObject[basename];
         if (component) {
-            options.generate && options.generate(filename, component, parsedCode);
+            let generate = lifeCycles.generate;
+            generate && generate(filename, component, parsedInfo);
         } else {
-            console.warn(`component ${filename} is not exsit.`)
+            warn(`Component ${basename} is not exsit.`);
+            warn(`${filename} is not exsit.`);
         }
-    })
+    });
 }
 
-function beforeGenerate () {
-    console.log('begin generate');
-}
