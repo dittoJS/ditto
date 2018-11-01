@@ -10,7 +10,8 @@ export default {
         link: 'a',
         button: 'button',
         router: 'page',
-        route: 'view'
+        route: 'view',
+        routeItem: 'view'
     },
     lifeCycles: {
         mounted: 'onReady'

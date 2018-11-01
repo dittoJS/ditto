@@ -12,6 +12,7 @@ export default function generate(entry, output, host) {
     readDirRecursive(output, function(filename, parsedInfo) {
         let basename = path.basename(filename, '.js');
         let component = host.$componentObject[basename];
+        console.log(Object.keys(host.$componentObject));
         if (component) {
             let generate = lifeCycles.generate;
             generate && generate(filename, component, parsedInfo);
@@ -21,4 +22,3 @@ export default function generate(entry, output, host) {
         }
     });
 }
-

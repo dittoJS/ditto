@@ -17,6 +17,7 @@ function toLowerCase(str) {
 }
 
 function compileNode(node, parentNode) {
+    if (!node) return false;
     let template = '';
     let deep = typeof options.deep === 'undefined' ? true : false;
     let middlewareFn = options.directives['v-bind'] || processProp;
@@ -142,7 +143,11 @@ function compileNodeList(node) {
     let template = '';
     if (Array.isArray(children)) {
         children.forEach(child => {
-            template += compileNode(child, node);
+            if (Array.isArray(child)) {
+                template += compileNodeList(child, node);
+            } else {
+                template += compileNode(child, node);
+            }
         });
     } else {
         template += compileNode(children, node);

@@ -2,6 +2,7 @@ export default {
     commonTag: {
         Router: 'ROUTER',
         Route: 'ROUTE',
+        RouteItem: 'ROUTE',
         View: 'VIEW',
         Image: 'IMAGE',
         Text: 'TEXT',

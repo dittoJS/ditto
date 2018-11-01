@@ -83,13 +83,13 @@ function generateJson(filename, component, parsedCode = []) {
 
     let subComponentsStr = '';
     subComponents.forEach(component => {
-        subComponentsStr += `"${component.name}": "${component.path}"`;
+        subComponentsStr += `,\n"${component.name}": "${component.path}"`;
     });
 
     let config = `{
         "component": "true",
         "usingComponents": {
-            ${subComponentsStr}
+            ${subComponentsStr.substr(1)}
             }
         }`;
 

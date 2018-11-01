@@ -40,10 +40,11 @@ export default class Component {
     }
 
     parseChildren(template) {
+        if (!template) return false;
         let self = this;
-        if (template.type === 'CHILD') {
-            parseChild(template);
-        }
+
+        parseChild(template);
+
         let children = template.props.children;
         if (!children || typeof children === 'string') {
             return false;
@@ -53,11 +54,10 @@ export default class Component {
             children.forEach(element => {
                 this.parseChildren(element);
             });
-        } else {
-            parseChild(children);
         }
 
         function parseChild(temp) {
+            console.log(temp.type)
             if (temp.type === 'CHILD') {
                 let child = temp.props['component'];
                 let cp = new Component(child, self.$transformOptions, self.$host);
@@ -69,10 +69,6 @@ export default class Component {
                 self.appendChild(cp);
                 cp.$isCustomComponent = true;
                 self.parseChildren(temp.props['component'].template);
-            }
-
-            if (temp.props && temp.props.children) {
-                self.parseChildren(temp);
             }
         }
     }
