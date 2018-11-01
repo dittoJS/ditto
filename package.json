@@ -2,9 +2,10 @@
   "name": "ditt",
   "version": "0.0.1",
   "description": "transform code on different mvvm framework",
-  "main": "index.js",
+  "main": "./build/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch-ditto": "nodemon --watch ./src/transform  --watch /Users/yangxiaofu/work/2018/meituan/projects/wechat-programm/mini-programm/ ./build/mini.js"
   },
   "dependencies": {
     "@babel/core": "^7.1.2",

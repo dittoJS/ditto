@@ -1,6 +1,7 @@
 import Component from './component/component';
 import generate from './generate/index';
 import React from 'react';
+import Config from '../config'
 
 global = Object.assign(global, {
     React,
@@ -10,14 +11,18 @@ global = Object.assign(global, {
     Button: 'BUTTON',
     TextInput: 'TEXTINPUT',
     Link: 'LINK',
-    Component: 'COMPONENT'
-});
+    Component: 'COMPONENT',
+    Child: 'CHILD'
+}, Config.global, Config.commonTag);
 
+let uid = 0;
 export default class Transform {
-    constructor (options) {
+    constructor (name, options) {
         this.$root = null;
         this.$config = null;
         this.$options = options;
+        this.$name = name;
+        this.$uid = uid++;
         this.$componentObject = {};
 
         this._currentComponent = null;

@@ -10,5 +10,6 @@ export default {
     events,
     components,
     lifeCycles,
-    style
+    style,
+    config
 };

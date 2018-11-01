@@ -1,10 +1,19 @@
 export default {
     commonTag: {
+        Router: 'ROUTER',
+        Route: 'ROUTE',
         View: 'VIEW',
         Image: 'IMAGE',
-        Text: 'TEXT'
+        Text: 'TEXT',
+        Button: 'BUTTON',
+        div: 'DIV',
+        p: 'P',
+        h1: 'H1',
+        h2: 'H2',
+        h3: 'H3',
+        h4: 'H4'
     },
-    lifecycles: [
+    lifeCycles: [
         'beforeCreate',
         'created',
         'beforeMount',

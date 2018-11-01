@@ -1,3 +1,3 @@
 export default function vIfDir(desc) {
-    return `wx:if='{{${desc.parseParams}}}'`;
+    return ` wx:if='{{${desc.parseParams}}}'`;
 }

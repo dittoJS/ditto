@@ -9,7 +9,7 @@ const Ditto = {
     createCompiler(name) {
         let _plugin = Ditto._plugins[name];
         if (_plugin) {
-            return new Transform(_plugin);
+            return new Transform(name, _plugin);
         }
     },
     addPlugin(name, plugin) {
@@ -29,4 +29,6 @@ const Ditto = {
 Ditto.addPlugin('vue2', Vue2Plugin);
 Ditto.addPlugin('wechat', MiniPlugin);
 Ditto.addPlugin('wechat', WeChatPlugin);
+
+console.log('init ditto.')
 export default Ditto;

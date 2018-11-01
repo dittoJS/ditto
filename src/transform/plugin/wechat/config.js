@@ -1,12 +1,18 @@
 export default {
-    tags: {
-        'view': 'view',
-        'text': 'text',
-        'image': 'image',
-        'link': 'a',
-        'button': 'button'
+    global: {
+        Page: 'Page',
+        Component: 'Component'
     },
-    lifecycles: {
-        ready: 'mounted'
+    tags: {
+        view: 'view',
+        text: 'text',
+        image: 'image',
+        link: 'a',
+        button: 'button',
+        router: 'page',
+        route: 'view'
+    },
+    lifeCycles: {
+        mounted: 'onReady'
     }
-}
+};

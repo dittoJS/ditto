@@ -21,7 +21,7 @@ export default class Component {
 
     beforeInit(options, transformOptions) {
         if (transformOptions.components.beforeCreate) {
-            options = transformOptions.components.beforeCreate(options);
+            transformOptions.components.beforeCreate(options);
         }
         if (!options.name) {
             console.error('Component must have an name.');
@@ -40,8 +40,11 @@ export default class Component {
     }
 
     parseChildren(template) {
-        let children = template.props.children;
         let self = this;
+        if (template.type === 'CHILD') {
+            parseChild(template);
+        }
+        let children = template.props.children;
         if (!children || typeof children === 'string') {
             return false;
         }
@@ -55,12 +58,17 @@ export default class Component {
         }
 
         function parseChild(temp) {
-            if (temp.type === 'COMPONENT') {
-                let cp = new Component(temp.props['v-ref'], self.$transformOptions, self.$host);
+            if (temp.type === 'CHILD') {
+                let child = temp.props['component'];
+                let cp = new Component(child, self.$transformOptions, self.$host);
                 self.appendChild(cp);
-                // self.$host.$componentObject[temp.props['v-ref'].name] = cp;
                 cp.$isCustomComponent = true;
-                self.parseChildren(temp.props['v-ref'].template);
+                self.parseChildren(child.template);
+            } else if (temp.type === 'ROUTE') {
+                let cp = new Component(temp.props['component'], self.$transformOptions, self.$host);
+                self.appendChild(cp);
+                cp.$isCustomComponent = true;
+                self.parseChildren(temp.props['component'].template);
             }
 
             if (temp.props && temp.props.children) {

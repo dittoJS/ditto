@@ -1,14 +1,16 @@
-import { 
-    removeSetData,
-    proccessComponent,
-    objectToString,
-    hyphenate,
-    normalizeFn,
-    writeFile } from '../../../src/utils/index';
+import { removeSetData, proccessComponent, objectToString, hyphenate, normalizeFn, writeFile } from '../../../src/utils/index';
+import Config from '../config';
+import routerFile from '../router/index.js';
 const fs = require('fs-extra');
 const path = require('path');
 
-export default function generate (filename, component, parsedCode) {
+export default function generate(filename, component, parsedCode) {
+    let opts = parsedCode.options;
+    if (opts.type === 'router') {
+        generateRouter(filename, component, parsedCode, opts);
+        return true;
+    }
+    console.log(opts);
     let dirname = path.dirname(filename);
     let basename = path.basename(filename, '.js');
     let templateFileName = path.join(dirname, basename + '.wxml');
@@ -17,8 +19,8 @@ export default function generate (filename, component, parsedCode) {
     let configFileName = path.join(dirname, basename + '.json');
 
     // remove origin tpl and style files
-    let tpl = path.join(dirname, basename + ".tpl.js");
-    let style = path.join(dirname, basename + ".style.js");
+    let tpl = path.join(dirname, basename + '.tpl.js');
+    let style = path.join(dirname, basename + '.style.js');
     fs.remove(tpl);
     fs.remove(style);
 
@@ -28,11 +30,11 @@ export default function generate (filename, component, parsedCode) {
     generateJson(configFileName, component, parsedCode);
 }
 
-function generateComponent (filename, parsedCode, component) {
+function generateComponent(filename, parsedCode, component) {
     let componentModel = component.$options;
-    let arr = proccessComponent(componentModel);
+    let arr = proccessComponent(componentModel, Config);
     let componentName = componentModel.name;
-    let isPage = false;  // page also can use Component constructor component.$isCustomComponent;
+    let isPage = false; // page also can use Component constructor component.$isCustomComponent;
     let tag = isPage ? 'Page' : 'Component';
     let commonCode = parsedCode.commonCode;
     let _code = '';
@@ -60,27 +62,27 @@ function generateComponent (filename, parsedCode, component) {
             });
         }
     });
-    _code += '});'
+    _code += '});';
     console.log(`generate ${filename}`);
     writeFile(filename, _code, true);
     return _code;
 }
 
-function generateTemplete (filename, template) {
+function generateTemplete(filename, template) {
     writeFile(filename, template);
 }
 
-function generateStyle (filename, style) {
+function generateStyle(filename, style) {
     if (style) {
         writeFile(filename, style);
     }
 }
 
-function generateJson (filename, component, parsedCode = []) {
-    let subComponents = parseSubComponentPath(parsedCode.refs);
+function generateJson(filename, component, parsedCode = []) {
+    let subComponents = parseSubComponentPath(parsedCode.imports);
 
     let subComponentsStr = '';
-    subComponents.forEach((component) => {
+    subComponents.forEach(component => {
         subComponentsStr += `"${component.name}": "${component.path}"`;
     });
 
@@ -94,12 +96,12 @@ function generateJson (filename, component, parsedCode = []) {
     writeFile(filename, config);
 }
 
-function parseSubComponentPath (arr) {
+function parseSubComponentPath(arr) {
     let subComponents = [];
     let filenameRE = /[\'|\"](.+)[\'|\"]/;
-    arr.forEach((item) => {
+    arr.forEach(item => {
         let matchs, componentName, filename;
-        if (matchs = item.match(filenameRE)) {
+        if ((matchs = item.match(filenameRE))) {
             filename = matchs[1];
             if (!filename.match(/(\.tpl)|(\.style)/)) {
                 let componentName = path.basename(filename, '.js');
@@ -113,4 +115,20 @@ function parseSubComponentPath (arr) {
     });
 
     return subComponents;
+}
+
+function generateRouter(filename, component, parsedCode, options) {
+    let componentModel = component.$options;
+    let arr = proccessComponent(componentModel, Config);
+    let componentName = componentModel.name;
+    let subComponents = parseSubComponentPath(parsedCode.imports);
+
+    let dirname = path.dirname(filename);
+    let basename = path.basename(filename, '.js');
+    let templateFileName = path.join(dirname, basename + '.wxml');
+    let jsonFileName = path.join(dirname, basename + '.json');
+    fs.remove(filename);
+    generateJson(jsonFileName, component, parsedCode);
+    generateTemplete(templateFileName, component.$result.template);
+    writeFile(filename, routerFile.template);
 }

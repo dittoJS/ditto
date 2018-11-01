@@ -1,6 +1,6 @@
 import config from '../../config';
 
-export function proccessComponent (options={}) {
+export function proccessComponent(options = {}, pluginConfig = {}) {
     /**
      @props
      @data
@@ -16,11 +16,13 @@ export function proccessComponent (options={}) {
     _attr('methods');
 
     let lifecycles = {};
-    config.lifecycles.forEach((item) => {
+    let lifeCycleOptions = pluginConfig.lifeCycles;
+
+    config.lifeCycles.forEach(item => {
         if (options[item]) {
-            lifecycles[item] = options[item];
+            lifecycles[lifeCycleOptions[item]] = options[item];
         }
-    })
+    });
 
     arr.push({
         type: 'lifecycles',
@@ -29,7 +31,7 @@ export function proccessComponent (options={}) {
 
     return arr;
 
-    function _attr (attrName) {
+    function _attr(attrName) {
         if (options[attrName]) {
             arr.push({
                 type: attrName,

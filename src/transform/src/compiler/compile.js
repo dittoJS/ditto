@@ -19,7 +19,7 @@ function toLowerCase(str) {
 function compileNode(node, parentNode) {
     let template = '';
     let deep = typeof options.deep === 'undefined' ? true : false;
-    let middlewareFn = options.directives.vBind || processProp;
+    let middlewareFn = options.directives['v-bind'] || processProp;
     let directives = Object.assign(defaultDirectives, options.directives);
     let processTag = options.processTag || toLowerCase;
     let compileNodeText = compileNodeTextBuilder(options);
@@ -34,6 +34,8 @@ function compileNode(node, parentNode) {
     // default process for tagName
     if (!tagName) {
         node.tagName = processTag(node.type);
+        beforeCompile(node);
+        tagName = node.tagName;
     }
 
     let props = node.props || {};
@@ -42,7 +44,7 @@ function compileNode(node, parentNode) {
         let matchs,
             attr = {};
         if (item === 'children') return false;
-
+        if (node.type === 'CHILD' && item === 'component') return false;
         // terminal dir
         if ((matchs = item.match(dirAttrRE))) {
             let dirParams;
@@ -52,10 +54,6 @@ function compileNode(node, parentNode) {
                 dirParams = props[item];
             } else if (matchs[1] === 'else') {
                 dirParams = props[item];
-            } else if (matchs[1] === 'ref') {
-                dirParams = props[item];
-                tagName = dirParams.tagName || dirParams.name;
-                nodeTemplate = `<${tagName} `;
             }
             let dir = {
                 name: matchs[1],
@@ -165,6 +163,13 @@ function compileNodeTextBuilder(options = {}) {
     };
 }
 
-function processProp(attr, node) {
-    return `${attr.desc.name}='${attr.desc.params}' `;
+function processProp(desc, node) {
+    return `${desc.name}='${desc.params}' `;
+}
+
+function beforeCompile(node) {
+    if (node.type === 'CHILD') {
+        let child = node.props.component;
+        node.tagName = child.name;
+    }
 }
