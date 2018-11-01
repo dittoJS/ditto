@@ -5,9 +5,9 @@ import vBindDir from './v-bind';
 import vOnDir from './v-on';
 
 export default {
-    'vIf': vIfDir,
-    'vElse': vElseDir,
-    'vFor': vForDir,
-    'vBind': vBindDir,
-    'vOn': vOnDir
+    'v-if': vIfDir,
+    'v-else': vElseDir,
+    'v-for': vForDir,
+    'v-bind': vBindDir,
+    'v-on': vOnDir
 };

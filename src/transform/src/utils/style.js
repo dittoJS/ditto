@@ -1,25 +1,34 @@
 import { hyphenate } from './lang';
 
 export const StyleSheet = {
-    create (obj = {}) {
+    create(obj = {}) {
         return obj;
     }
 };
 
-export function jsToCss (style, styleOptions) {
+export function jsToCss(style, styleOptions) {
     if (!style) return '';
 
-    let cb = styleOptions.beforeCompile || function (val) { return val; };
+    let cb =
+        styleOptions.beforeCompile ||
+        function(val, key) {
+            return { 
+                    value: val,
+                    key
+                };
+        };
     let _style = '';
-    Object.keys(style).forEach((attr) => {
+    Object.keys(style).forEach(attr => {
         let items = style[attr];
-        _style += `.${attr} {\n`;
-        Object.keys(items).forEach((item) => {
-            let attr = cb(items[item]);
-            _style += `    ${hyphenate(item)}: ${attr};\n`;
+        _style += `.${hyphenate(attr)} {\n`;
+        Object.keys(items).forEach(item => {
+            let obj = cb(items[item], item);
+            let value = obj.value;
+            let key = obj.key;
+            _style += `    ${hyphenate(item)}: ${value};\n`;
         });
-        _style += `}\n`
-    })
+        _style += `}\n`;
+    });
 
     return _style;
 }

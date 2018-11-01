@@ -31,6 +31,15 @@ export function hyphenate (str) {
     .toLowerCase()
 }
 
+/**
+ * es5 to es6
+ * @param {*} code 
+ */
+let fnRE = /(\w+)(\:\s+function\s*\w+)(\()/g
+export function transformFn (code) {
+  return code.replace(fnRE, '$1$3');
+}
+
 export function firstWordToUp (str) {
   let firstWord = str[0];
   let rest = str.substr(1);

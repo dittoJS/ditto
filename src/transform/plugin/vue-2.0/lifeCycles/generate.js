@@ -1,14 +1,17 @@
-import { 
-    removeSetData,
-    proccessComponent,
-    objectToString,
-    hyphenate,
-    normalizeFn,
-    writeFile } from '../../../src/utils/index';
+import { removeSetData, proccessComponent, objectToString, hyphenate, normalizeFn, writeFile, transformFn, firstWordToUp } from '../../../src/utils/index';
+import routerTemplateFn from '../router/index';
+import Config from '../config';
+
 const fs = require('fs-extra');
 const path = require('path');
 
-export default function generate (filename, component, parsedInfo) {
+export default function generate(filename, component, parsedInfo) {
+    let opts = parsedInfo.options;
+    if (opts.type === 'router') {
+        generateRouter(filename, component, parsedInfo, opts);
+        return true;
+    }
+
     let dirname = path.dirname(filename);
     let basename = path.basename(filename, '.js');
     let componentFileName = path.join(dirname, basename + '.vue');
@@ -26,7 +29,7 @@ export default function generate (filename, component, parsedInfo) {
 
 function generateComponent(filename, parsedCode, component) {
     let componentModel = component.$options;
-    let arr = proccessComponent(componentModel);
+    let arr = proccessComponent(componentModel, Config);
     let componentName = componentModel.name;
     let isPage = false; // page also can use Component constructor. component.$isCustomComponent;
     let tag = isPage ? 'Page' : 'Component';
@@ -70,7 +73,7 @@ function generateComponent(filename, parsedCode, component) {
         } else if (element.type === 'lifecycles') {
             Object.keys(element.body).forEach(el => {
                 let fn = element.body[el];
-                let fnName = config.lifecycles[el];
+                let fnName = Config.lifeCycles[el];
                 if (fnName) {
                     _code += `\n${fnName}: `;
                     _code += normalizeFn(fn.toString());
@@ -92,7 +95,7 @@ function generateComponent(filename, parsedCode, component) {
         _code += '\n}';
     }
     _code += '};';
-
+    _code = transformFn(_code);
     _code = removeSetData(_code);
     let vueCode = `<template>\n${template}\n</template>
     <style>\n${style}\n</style>
@@ -104,6 +107,7 @@ function generateComponent(filename, parsedCode, component) {
 }
 
 function parseSubComponentPath(arr) {
+    if (!arr) return [];
     let subComponents = [];
     let filenameRE = /[\'|\"](.+)[\'|\"]/;
     arr.forEach(item => {
@@ -122,4 +126,34 @@ function parseSubComponentPath(arr) {
     });
 
     return subComponents;
+}
+
+function generateRouter(filename, component, parsedCode, options) {
+    let componentModel = component.$options;
+    let componentName = componentModel.name;
+    let subComponents = parseSubComponentPath(parsedCode.imports);
+
+    let dirname = path.dirname(filename);
+    let basename = path.basename(filename, '.js');
+    fs.remove(filename);
+    let code = ``;
+    let routes = component.$routes;
+    let htmlTemplate = component.$host.$options.html;
+    subComponents.forEach((child) => {
+        code += `import ${firstWordToUp(child.name)} from '${child.path}';\n`;
+    });
+    let routerTemplate = '';
+    routerTemplate += `[\n`;
+    routes.forEach(route => {
+        routerTemplate += `{
+            path: '${route.path}',
+            component: ${route.name}
+        },\n`;
+    });
+    routerTemplate += `]`;
+    writeFile(filename, code + routerTemplateFn(routerTemplate));
+    writeFile(
+        path.join(dirname, 'index.html'),
+        htmlTemplate
+    );
 }

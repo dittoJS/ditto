@@ -21,22 +21,21 @@ module.exports = function({ types: t }) {
                     //     NAME: t.
                     // });
                     // console.log(objs)
-                    objs.forEach(el => {
+                    objs && objs.forEach(el => {
                         //_obj[el.key.name] = el.value.value;
                         //code += `
-                        //${context}['${el.key.name}'] = ${el.value.value}; 
-                    //`;
+                        //${context}['${el.key.name}'] = ${el.value.value};
+                        //`;
                         let _ast = {
                             type: 'MemberExpression',
                             object: callee.object,
                             property: null
                         };
-                        _ast.property = builder('=', el.key, el.value)
+                        _ast.property = builder('=', el.key, el.value);
                         astArr.push(_ast);
                     });
 
                     context = 'this';
-                    //console.log()
                     if (callee.object.type === 'Identifier') {
                         context = callee.object.name;
                     }

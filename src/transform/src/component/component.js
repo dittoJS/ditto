@@ -16,6 +16,7 @@ export default class Component {
         this.$transformOptions = transformOptions;
         this.$isCustomComponent = true;
         this.$host.$componentObject[options.name] = this;
+        this.$routes = [];
         this.init();
     }
 
@@ -29,7 +30,7 @@ export default class Component {
     }
 
     init() {
-        this.parseChildren(this.$template);
+        this.parseChildren(this.$template, this.$routes);
         this.compileTemplate();
         this.$result.style = jsToCss(this.$options.style, this.$transformOptions.style || {});
     }
@@ -39,7 +40,7 @@ export default class Component {
         child.$parent = this;
     }
 
-    parseChildren(template) {
+    parseChildren(template, routes = []) {
         if (!template) return false;
         let self = this;
 
@@ -52,12 +53,11 @@ export default class Component {
 
         if (Array.isArray(children)) {
             children.forEach(element => {
-                this.parseChildren(element);
+                this.parseChildren(element, routes);
             });
         }
 
         function parseChild(temp) {
-            console.log(temp.type)
             if (temp.type === 'CHILD') {
                 let child = temp.props['component'];
                 let cp = new Component(child, self.$transformOptions, self.$host);
@@ -65,10 +65,17 @@ export default class Component {
                 cp.$isCustomComponent = true;
                 self.parseChildren(child.template);
             } else if (temp.type === 'ROUTE') {
+                let currentRoutes;
                 let cp = new Component(temp.props['component'], self.$transformOptions, self.$host);
                 self.appendChild(cp);
                 cp.$isCustomComponent = true;
-                self.parseChildren(temp.props['component'].template);
+
+                currentRoutes = {
+                    path: temp.props.path,
+                    name: temp.props.component.name
+                };
+                routes.push(currentRoutes);
+                self.parseChildren(temp.props['component'].template, currentRoutes);
             }
         }
     }

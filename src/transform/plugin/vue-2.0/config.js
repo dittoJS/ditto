@@ -6,7 +6,7 @@ export default {
         'link': 'a',
         'button': 'span'
     },
-    lifecycles: {
-        ready: 'mounted'
+    lifeCycles: {
+        'mounted': 'mounted'
     }
 }

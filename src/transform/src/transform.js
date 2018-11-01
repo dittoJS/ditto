@@ -37,6 +37,10 @@ export default class Transform {
         return this;
     }
 
+    setHtml (_html) {
+        this.$options.html = _html;
+    }
+
     traverse () {
 
     }

@@ -6,11 +6,12 @@ const path = require('path');
 
 export default function generate(filename, component, parsedCode) {
     let opts = parsedCode.options;
+
     if (opts.type === 'router') {
         generateRouter(filename, component, parsedCode, opts);
         return true;
     }
-    console.log(opts);
+    
     let dirname = path.dirname(filename);
     let basename = path.basename(filename, '.js');
     let templateFileName = path.join(dirname, basename + '.wxml');

@@ -1,10 +1,19 @@
 export default {
-    beforeCompile (attr) {
-        let matchs = attr.match(/(.+)rem/);
+    beforeCompile (value, key) {
+        let matchs
+        if (typeof value === 'string') {
+            matchs = value.match(/(.+)rem/);
+        }
         if (matchs) {
-            return Number(matchs[1]) * 100 + 'rpx';
+            return {
+                value: Number(matchs[1]) * 100 + 'rpx',
+                key: key
+            };
         } else {
-            return attr;
+            return {
+                value,
+                key
+            };
         }
     }
 }
