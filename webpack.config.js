@@ -1,10 +1,11 @@
 const path = require('path');
 const fileListPlugin = require('./src/webpack/test.plugin');
-//const entry = "./test/mini.config.js";
+const entry = "./test/mini.config.js";
 // const vue2 = "./test/vue2.config.js";
 // const entry = './test/transform.js';
 // const entry = './src/transform/src/index.js';
-const entry = './test/blog/index.js'
+//const entry = './test/blog/index.js'
+
 module.exports = {
     mode: 'development',
     entry: entry,
@@ -19,7 +20,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(ts|js)x?$/,
+                test: /\.(js)x?$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader'
             }
