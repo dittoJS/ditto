@@ -41,10 +41,11 @@ export default class Component {
     }
 
     parseChildren(template, routes = []) {
-        if (!template) return false;
+        if (!template) {
+            warn(`Missing template for ${this.$name}.`);
+        };
         let self = this;
-
-        parseChild(template);
+        parseComponent(template);            
 
         let children = template.props.children;
         if (!children || typeof children === 'string') {
@@ -55,9 +56,11 @@ export default class Component {
             children.forEach(element => {
                 this.parseChildren(element, routes);
             });
+        } else {
+            this.parseChildren(children);            
         }
 
-        function parseChild(temp) {
+        function parseComponent(temp) {
             if (temp.type === 'CHILD' && temp.props['component']) {
                 let child = temp.props['component'];
                 let cp = new Component(child, self.$transformOptions, self.$host);

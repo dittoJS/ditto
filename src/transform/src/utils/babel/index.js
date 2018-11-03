@@ -2,9 +2,10 @@ const template = require('babel-template');
 const generate = require('babel-generator');
 const t = require('babel-types');
 const babylon = require('babylon');
-const babel = require('babel-core');
+const babel = require('@babel/core');
 const setDataPlugin = require('./setData.js');
-const removeRequirePlugin = require('./require.js');
+const removeIfBlockPlugin = require('./if.js');
+import jsx from '@babel/plugin-syntax-jsx';
 
 const testCode = `
 import footer from './index.wechat.js';
@@ -33,14 +34,14 @@ export default {
 // })
 // console.log(ret.code)
 
-export function removeSetData (code) {
+export function removeSetData(code) {
     return babel.transform(code, {
         plugins: [setDataPlugin]
     }).code;
 }
 
-export function removeRequire (code) {
+export function removeIfBlock(code) {
     return babel.transform(code, {
-        plugins: [removeRequirePlugin]
+        plugins: [removeIfBlockPlugin, jsx]
     }).code;
 }

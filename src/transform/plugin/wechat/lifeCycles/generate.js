@@ -11,7 +11,7 @@ export default function generate(filename, component, parsedCode) {
         generateRouter(filename, component, parsedCode, opts);
         return true;
     }
-    
+
     let dirname = path.dirname(filename);
     let basename = path.basename(filename, '.js');
     let templateFileName = path.join(dirname, basename + '.wxml');

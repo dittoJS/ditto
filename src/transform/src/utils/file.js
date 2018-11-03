@@ -2,10 +2,11 @@ const fs = require('fs-extra');
 const path = require('path');
 import { warn } from './debug';
 // import { codePrettier } from './lang';
+import { removeIfBlock } from './babel/index';
 
 let componentFileRE = /\/\*\s*\@component\s*\*\//; // /* component */
 let routerFileRE = /\/\*\s*\@router\s*\*\//; // /* Router */
-let refOfComponentRE = /\/\*\s*\@import\s*\*\/\s*\n((.+\n)+)\n+/; // /* @import */
+let importsOfComponentRE = /\/\*\s*\@import\s*\*\/\s*\n*((.+\n)+)\n+/; // /* @import */
 
 export function writeFile(file, content, isPretter = false) {
     fs.ensureFile(file, err => {
@@ -20,88 +21,87 @@ export function writeFile(file, content, isPretter = false) {
 }
 
 /**
+ * called after parsed file info
+ * @param {*} filename
+ * @param {*} code
+ */
+function removeOtherPlatformCode(filename, code) {
+    if (filename.indexOf('.js') !== -1) {
+        code = removeIfBlock(code);
+    }
+
+    return code;
+}
+
+/**
  * read file and parse component files
  * @param {*} dirname
  * @param {*} cb
  */
-export function readDirRecursive(dirname, cb) {
-    // console.log('dirname: ', dirname);
-    fs.readdir(dirname, 'utf8', function(err, files) {
-        if (err) {
-            console.log(err);
+export function parseFiles(obj = {}, cb) {
+    let filename = obj.filename;
+    let content = obj.content;
+    let _RE = componentFileRE;
+    let options = {
+        type: 'component'
+    };
+
+    if (!isComponentFile(content)) {
+        // warn(`Invalid component: ${filename}`);
+        if (isRouterFile(content)) {
+            _RE = routerFileRE;
+            options.type = 'router';
+        } else {
+            removeOtherPlatformCode(filename, content);
             return false;
         }
-        files.forEach(file => {
-            let filename = path.join(dirname, file);
-            let _RE = componentFileRE;
-            // console.log('filename: ', filename)
-            if (fs.statSync(filename).isFile()) {
-                let content = isComponentFile(filename);
-                let options = {
-                    type: 'component'
-                };
+    }
 
-                if (!content) {
-                    // warn(`Invalid component: ${filename}`);
-                    content = isRouterFile(filename);
-                    _RE = routerFileRE;
-                    options.type = 'router';
-
-                    if (!content) {
-                        return false;
-                    }
-                }
-
-                /**
-                 * process for the require of chilren components and styles
-                 */
-                let componentLink = '';
-                let componentRemoveLink = content.replace(refOfComponentRE, function(match) {
-                    componentLink = match;
-                    return '\n';
-                });
-                content = componentRemoveLink;
-                let codeArray = content.split(_RE);
-                let commonCode = codeArray[0];
-                let componentCode = codeArray[1];
-                let refs = [];
-                componentLink.split('\n').forEach((item, index) => {
-                    if (index !== 0 && item) {
-                        refs.push(item);
-                    }
-                });
-
-                if (codeArray.length !== 2) {
-                    warn(`Missing @component identify.`);
-                } else {
-                    cb &&
-                        cb(filename, {
-                            commonCode,
-                            componentCode,
-                            imports: refs,
-                            options,
-                            content
-                        });
-                }
-            } else {
-                readDirRecursive(filename, cb);
-            }
-        });
+    /**
+     * process for the require of chilren components and styles
+     */
+    let componentLink = '';
+    let componentRemoveLink = content.replace(importsOfComponentRE, function(match) {
+        componentLink = match;
+        return '\n';
     });
+    content = componentRemoveLink;
+    let codeArray = content.split(_RE);
+    let commonCode = codeArray[0];
+    let componentCode = codeArray[1];
+    let refs = [];
+    componentLink.split('\n').forEach((item, index) => {
+        if (index !== 0 && item) {
+            refs.push(item);
+        }
+    });
+
+    if (codeArray.length !== 2) {
+        warn(`Missing @component identify.`);
+    } else {
+        cb &&
+            cb(filename, {
+                commonCode: removeOtherPlatformCode(filename, commonCode),
+                componentCode: removeOtherPlatformCode(filename, componentCode),
+                imports: refs,
+                options,
+                content
+            });
+    }
 }
 
-export function readDirFiles (dirname, cb) {
+export function readDirFiles(dirname, cb) {
     let files = fs.readdirSync(dirname, 'utf8');
     if (files) {
         files.forEach(file => {
             let filename = path.join(dirname, file);
             if (fs.statSync(filename).isFile()) {
-                cb && cb(filename)
+                cb && cb(filename);
             } else {
                 readDirFiles(filename, cb);
             }
         });
-    };
+    }
 }
 
 export function copy(from, to) {
@@ -118,9 +118,7 @@ export function copy(from, to) {
     fs.copySync(from, to);
 }
 
-function isComponentFile(filename) {
-    let code = fs.readFileSync(filename, 'utf8');
-
+function isComponentFile(code) {
     if (code.match(componentFileRE)) {
         return code;
     } else {
@@ -128,9 +126,7 @@ function isComponentFile(filename) {
     }
 }
 
-function isRouterFile(filename) {
-    let code = fs.readFileSync(filename, 'utf8');
-
+function isRouterFile(code) {
     if (code.match(routerFileRE)) {
         return code;
     } else {

@@ -37,7 +37,7 @@ export default class Transform {
 
     renderPage (app) {
         // node_env
-        process.env.platform = this.$name;
+        process.env._compile_platform = this.$name;
         this.$root = new Component(app, this.$options, this);
         return this;
     }
@@ -57,8 +57,8 @@ export default class Transform {
     generate (entry, output) {
         // let entry = this.$options.entry;
         // let output = this.$options.output;
-        beforeGenerate.call(this, {entry, output})
-        //generate(entry, output, this);
+        let fileInfoArray = beforeGenerate.call(this, {entry, output})
+        generate(fileInfoArray, this);
         return this;
     }
 }

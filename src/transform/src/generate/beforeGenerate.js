@@ -1,4 +1,4 @@
-import { readDirFiles, removeRequire } from '../utils/index';
+import { readDirFiles, writeFile } from '../utils/index';
 import fs from 'fs-extra';
 const path = require('path');
 
@@ -8,13 +8,15 @@ export function beforeGenerate(params) {
         platform = this.$name,
         plugins = this.$host._plugins,
         entry = params.entry,
-        output = params.output;
+        output = params.output,
+        retArr = [];
 
     let fnRE = function(platform) {
         return new RegExp(`\\.${platform}\\.`);
     };
 
     let platformDir = path.join(entry, platform);
+    fs.removeSync(output);
     readDirFiles(entry, function(filename) {
         let flag = false;
         Object.keys(plugins).forEach(function(pluginName, i) {
@@ -32,7 +34,8 @@ export function beforeGenerate(params) {
 
     // copy files to output directory
     let platforms = Object.keys(plugins);
-    compilerFiles.concat(compilerFileObject[platform]).forEach(file => {
+    let entryFiles = compilerFiles.concat(compilerFileObject[platform]);
+    entryFiles.forEach(file => {
         let outName = file.replace(entry, output);
         fs.ensureFileSync(outName);
 
@@ -42,19 +45,18 @@ export function beforeGenerate(params) {
             if (type !== platform) {
                 // remove other platform code
                 let _re = new RegExp(`\\n\.+\/${type}\/\.*`, 'g');
-                if (content.match(_re)) {
-                    console.log('match----------');
-                }
+
                 content = content.replace(_re, '');
             }
         });
 
-        fs.writeFileSync(outName, content);
+        writeFile(outName, content);
+        retArr.push({
+            filename: outName,
+            content: content
+        })
     });
 
-    let testCode = `
-        const name = require('./name.js')
-    `;
-
-    //console.log(removeRequire(testCode));
+    console.log('ready to generate.');
+    return retArr;
 }

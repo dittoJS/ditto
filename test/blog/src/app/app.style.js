@@ -6,14 +6,14 @@ const Style = {
     flexDirection: 'column'
   },
   header: {
-      flex: 1,
-      height: 200,
-      backgroundColor: 'red'
+    flex: 1,
+    height: 200,
+    backgroundColor: 'red'
   },
   container: {
-      flex: 1,
-      height: 500,
-      backgroundColor: '#eee'
+    flex: 1,
+    height: 500,
+    backgroundColor: '#eee'
   }
 };
-export default  Style;
+export default Style;

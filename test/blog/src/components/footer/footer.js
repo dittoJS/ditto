@@ -1,24 +1,19 @@
 /* @component */
-const template = (
-    <View className='footer-wrap'>
+const template = <View className='footer-wrap'>
         <View className='container'>
             <Text>
                 msg
             </Text>
         </View>
-    </View>
-)
-
+    </View>;
 export default {
-    name: 'footer',
-    template,
-    props: {
+  name: 'footer',
+  template,
+  props: {},
+  data: {
+    msg: 'Not ready!'
+  },
 
-    },
-    data: {
-        msg: 'Not ready!'
-    },
-    ready() {
-        
-    }
-}
+  ready() {}
+
+};
