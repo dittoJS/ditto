@@ -33,6 +33,8 @@ export default class Transform {
     }
 
     renderPage (app) {
+        // node_env
+        process.env.platform = this.$name;
         this.$root = new Component(app, this.$options, this);
         return this;
     }

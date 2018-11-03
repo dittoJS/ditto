@@ -18,6 +18,7 @@ function toLowerCase(str) {
 
 function compileNode(node, parentNode) {
     if (!node) return false;
+    if(node.type === 'CHILD' && !node.props.component) return false;
     let template = '';
     let deep = typeof options.deep === 'undefined' ? true : false;
     let middlewareFn = options.directives['v-bind'] || processProp;

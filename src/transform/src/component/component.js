@@ -58,7 +58,7 @@ export default class Component {
         }
 
         function parseChild(temp) {
-            if (temp.type === 'CHILD') {
+            if (temp.type === 'CHILD' && temp.props['component']) {
                 let child = temp.props['component'];
                 let cp = new Component(child, self.$transformOptions, self.$host);
                 self.appendChild(cp);
