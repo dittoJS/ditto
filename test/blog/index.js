@@ -1,19 +1,22 @@
+import wechatIndex from './wechat/index';
+import vueIndex from './vue2/index';
+
 /* @import */
 import AppComponent from './src/app/app';
 
 /* @component */
 const template = (
-  <View className="wrapper">
-    <View className="container">
-      <Component v-ref={AppComponent}/>
+    <View className="wrapper">
+        <View className="container">
+            <Component v-ref={AppComponent} />
+        </View>
     </View>
-  </View>
 );
 
 export default {
     name: 'index',
     template,
-    ready () {
+    ready() {
         console.log('init blog home page.');
     }
 };

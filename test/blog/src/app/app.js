@@ -1,3 +1,5 @@
+import wechat from '../common/index.wechat';
+
 /* @import */
 import Footer from '../components/footer/footer';
 import template from './app.tpl.js';

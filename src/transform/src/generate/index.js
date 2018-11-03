@@ -7,7 +7,7 @@ export default function generate(entry, output, host) {
     let pluginName = host.$name;
     let lifeCycles = options.lifeCycles;
     fs.removeSync(output);
-    copy(entry, output);
+    //copy(entry, output);
     console.log('Ready to generate.');
     readDirRecursive(output, function(filename, parsedInfo) {
         let basename = path.basename(filename, '.js');

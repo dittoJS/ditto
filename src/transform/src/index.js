@@ -9,7 +9,7 @@ const Ditto = {
     createCompiler(name) {
         let _plugin = Ditto._plugins[name];
         if (_plugin) {
-            return new Transform(name, _plugin);
+            return new Transform(name, _plugin, Ditto);
         }
     },
     addPlugin(name, plugin) {

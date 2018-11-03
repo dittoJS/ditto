@@ -4,7 +4,10 @@ const t = require('babel-types');
 const babylon = require('babylon');
 const babel = require('babel-core');
 const setDataPlugin = require('./setData.js');
+const removeRequirePlugin = require('./require.js');
+
 const testCode = `
+import footer from './index.wechat.js';
 export default {
     ready () {
         let self = this;
@@ -33,5 +36,11 @@ export default {
 export function removeSetData (code) {
     return babel.transform(code, {
         plugins: [setDataPlugin]
+    }).code;
+}
+
+export function removeRequire (code) {
+    return babel.transform(code, {
+        plugins: [removeRequirePlugin]
     }).code;
 }

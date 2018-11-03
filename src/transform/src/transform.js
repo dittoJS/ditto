@@ -1,5 +1,6 @@
 import Component from './component/component';
 import generate from './generate/index';
+import { beforeGenerate } from './generate/beforeGenerate';
 import React from 'react';
 import Config from '../config'
 
@@ -17,13 +18,15 @@ global = Object.assign(global, {
 
 let uid = 0;
 export default class Transform {
-    constructor (name, options) {
+    constructor (name, options, host) {
         this.$root = null;
-        this.$config = null;
+        this.$config = {};
+        this.$compiler = {};
         this.$options = options;
         this.$name = name;
         this.$uid = uid++;
         this.$componentObject = {};
+        this.$host = host;
 
         this._currentComponent = null;
     }
@@ -54,7 +57,8 @@ export default class Transform {
     generate (entry, output) {
         // let entry = this.$options.entry;
         // let output = this.$options.output;
-        generate(entry, output, this);
+        beforeGenerate.call(this, {entry, output})
+        //generate(entry, output, this);
         return this;
     }
 }

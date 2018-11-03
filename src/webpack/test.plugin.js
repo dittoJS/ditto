@@ -21,7 +21,7 @@ class MyPlugin {
                         module.buildInfo.fileDependencies.forEach(filepath => {
                             // we've learned a lot about the source structure now...
                         if (filepath.indexOf('node_modules') == -1 && filepath.indexOf('.babelrc') == -1) {
-                                console.log('----- file -------', filepath);
+                                // console.log('----- file -------', filepath);
                             }
                         });
                 });

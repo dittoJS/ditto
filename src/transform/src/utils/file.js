@@ -19,6 +19,11 @@ export function writeFile(file, content, isPretter = false) {
     });
 }
 
+/**
+ * read file and parse component files
+ * @param {*} dirname
+ * @param {*} cb
+ */
 export function readDirRecursive(dirname, cb) {
     // console.log('dirname: ', dirname);
     fs.readdir(dirname, 'utf8', function(err, files) {
@@ -35,7 +40,7 @@ export function readDirRecursive(dirname, cb) {
                 let options = {
                     type: 'component'
                 };
-                
+
                 if (!content) {
                     // warn(`Invalid component: ${filename}`);
                     content = isRouterFile(filename);
@@ -83,6 +88,20 @@ export function readDirRecursive(dirname, cb) {
             }
         });
     });
+}
+
+export function readDirFiles (dirname, cb) {
+    let files = fs.readdirSync(dirname, 'utf8');
+    if (files) {
+        files.forEach(file => {
+            let filename = path.join(dirname, file);
+            if (fs.statSync(filename).isFile()) {
+                cb && cb(filename)
+            } else {
+                readDirFiles(filename, cb);
+            }
+        });
+    };
 }
 
 export function copy(from, to) {

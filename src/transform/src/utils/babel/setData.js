@@ -14,13 +14,7 @@ module.exports = function({ types: t }) {
                     let code = '';
                     let astArr = [];
                     let context = 'this';
-                    // let buildAssign = template(`
-                    //     NAME['KEY'] = VALUE;
-                    // `);
-                    // const ast = buildAssign({
-                    //     NAME: t.
-                    // });
-                    // console.log(objs)
+            
                     objs && objs.forEach(el => {
                         //_obj[el.key.name] = el.value.value;
                         //code += `
