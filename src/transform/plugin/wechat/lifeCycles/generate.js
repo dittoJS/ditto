@@ -1,4 +1,13 @@
-import { removeSetData, proccessComponent, objectToString, hyphenate, normalizeFn, writeFile } from '../../../src/utils/index';
+import { 
+    removeSetData, 
+    proccessComponent, 
+    objectToString, 
+    hyphenate, 
+    normalizeFn, 
+    writeFile, 
+    codePrettier,
+    removeOtherPlatformCode
+} from '../../../src/utils/index';
 import Config from '../config';
 import routerFile from '../router/index.js';
 const fs = require('fs-extra');
@@ -22,8 +31,8 @@ export default function generate(filename, component, parsedCode) {
     // remove origin tpl and style files
     let tpl = path.join(dirname, basename + '.tpl.js');
     let style = path.join(dirname, basename + '.style.js');
-    fs.remove(tpl);
-    fs.remove(style);
+    fs.removeSync(tpl);
+    fs.removeSync(style);
 
     generateTemplete(templateFileName, component.$result.template);
     generateStyle(styleFileName, component.$result.style);
@@ -65,6 +74,8 @@ function generateComponent(filename, parsedCode, component) {
     });
     _code += '});';
     console.log(`generate ${filename}`);
+    _code = removeOtherPlatformCode(filename, _code);
+    _code = codePrettier(_code);
     writeFile(filename, _code, true);
     return _code;
 }
@@ -75,6 +86,7 @@ function generateTemplete(filename, template) {
 
 function generateStyle(filename, style) {
     if (style) {
+        style = codePrettier(style, 'css');
         writeFile(filename, style);
     }
 }
@@ -94,6 +106,7 @@ function generateJson(filename, component, parsedCode = []) {
             }
         }`;
 
+    config = codePrettier(config, 'json');
     writeFile(filename, config);
 }
 

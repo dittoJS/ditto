@@ -1,4 +1,4 @@
-// import prettier from 'prettier';
+import prettier from 'prettier';
 import { normalize } from 'path';
 /**
  * Camelize a hyphen-delimited string.
@@ -82,20 +82,19 @@ export function deepCopy (obj) {
   return newVal;
 }
 
-/*
-export function codePrettier (code) {
+
+export function codePrettier (code, parser) {
     try {
       code = prettier.format(code, {
-        semi: false,
+        semi: true,
         tabWidth: 4,
-        useTabs: true,
-        parser: "babylon"
+        parser: parser || "babylon"
       });
     } catch (error) {
       console.log(error);
     }
     return code;
-}*/
+}
 
 export function normalizeFn (fnString) {
   if (!fnString.match(/function/)) {

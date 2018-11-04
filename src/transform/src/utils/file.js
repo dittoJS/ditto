@@ -9,15 +9,8 @@ let routerFileRE = /\/\*\s*\@router\s*\*\//; // /* Router */
 let importsOfComponentRE = /\/\*\s*\@import\s*\*\/\s*\n*((.+\n)+)\n+/; // /* @import */
 
 export function writeFile(file, content, isPretter = false) {
-    fs.ensureFile(file, err => {
-        if (err) console.log(err);
-
-        fs.outputFile(file, content, err => {
-            if (err) {
-                console.log(err);
-            }
-        });
-    });
+    fs.ensureFileSync(file);
+    fs.outputFileSync(file, content);
 }
 
 /**
@@ -25,7 +18,7 @@ export function writeFile(file, content, isPretter = false) {
  * @param {*} filename
  * @param {*} code
  */
-function removeOtherPlatformCode(filename, code) {
+export function removeOtherPlatformCode(filename, code) {
     if (filename.indexOf('.js') !== -1) {
         code = removeIfBlock(code);
     }

@@ -54,7 +54,7 @@ export function beforeGenerate(params) {
         retArr.push({
             filename: outName,
             content: content
-        })
+        });
     });
 
     console.log('ready to generate.');
