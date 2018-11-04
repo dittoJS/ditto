@@ -50,12 +50,7 @@ export default class Transform {
 
     }
 
-    beforeCompile () {
-
-    }
-
     compile (opts = {}) {
-        this.beforeCompile(opts);
         this.renderPage(opts.app);
         this.generate(opts.entry, opts.output);
     }

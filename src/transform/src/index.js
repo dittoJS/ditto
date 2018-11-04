@@ -22,13 +22,19 @@ const Ditto = {
         if (pluginCreator) {
             return pluginCreator(utils);
         }
+    },
+    run (options = {}) {
+        let _plugins = options.plugins || [];
+        _plugins.forEach(plugin => {
+            if (typeof plugin === 'string') {
+                this._plugins[plugin].compile(options.config);
+            }
+        });
     }
 };
 
 // default plugins
 Ditto.addPlugin('vue2', Vue2Plugin);
-Ditto.addPlugin('wechat', MiniPlugin);
 Ditto.addPlugin('wechat', WeChatPlugin);
 
-console.log('init ditto.')
 export default Ditto;
