@@ -1,5 +1,4 @@
 const path = require('path');
-const fileListPlugin = require('./src/webpack/test.plugin');
 const entry = "./test/mini.config.js";
 // const vue2 = "./test/vue2.config.js";
 // const entry = './test/transform.js';
@@ -25,8 +24,5 @@ module.exports = {
                 loader: 'babel-loader'
             }
         ]
-    },
-    plugins: [
-        new fileListPlugin()
-    ]
+    }
 };

@@ -1,5 +1,5 @@
 {
-  "name": "ditt",
+  "name": "ditto-core",
   "version": "0.0.1",
   "description": "transform code on different mvvm framework",
   "main": "./build/main.js",

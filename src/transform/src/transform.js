@@ -54,9 +54,13 @@ export default class Transform {
 
     }
 
+    compile (opts = {}) {
+        this.beforeCompile(opts);
+        this.renderPage(opts.app);
+        this.generate(opts.entry, opts.output);
+    }
+
     generate (entry, output) {
-        // let entry = this.$options.entry;
-        // let output = this.$options.output;
         let fileInfoArray = beforeGenerate.call(this, {entry, output})
         generate(fileInfoArray, this);
         return this;
