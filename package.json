@@ -1,8 +1,8 @@
 {
   "name": "ditto-core",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "transform code on different mvvm framework",
-  "main": "./build/main.js",
+  "main": "./dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch-ditto": "nodemon --watch ./src/transform  --watch /Users/yangxiaofu/work/2018/meituan/projects/wechat-programm/mini-programm/ ./build/mini.js"

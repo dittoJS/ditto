@@ -1,3 +1,5 @@
+> This project is currently in beta and APIs are subject to change.
+
 # [Ditto](https://dittojs.github.io/documents/)
 
 跨平台、框架编译转换框架。
